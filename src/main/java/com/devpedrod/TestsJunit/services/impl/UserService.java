@@ -23,6 +23,6 @@ public class UserService implements IUserService {
     public User getById(Long id) {
         log.info("Looking for user with ID: {}", id);
         Optional<User> user = userRepository.findById(id);
-        return user.orElseThrow(() -> new ObjectNotFoundException("User with ID: "+ id +" not found"));
+        return user.orElseThrow(() -> new ObjectNotFoundException("User with id "+ id +" not found"));
     }
 }
