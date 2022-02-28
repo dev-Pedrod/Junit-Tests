@@ -1,7 +1,9 @@
 package com.devpedrod.TestsJunit.controller;
 
 import com.devpedrod.TestsJunit.domain.User;
+import com.devpedrod.TestsJunit.dto.UserDto;
 import com.devpedrod.TestsJunit.services.IUserService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,9 +17,11 @@ public class UserController {
 
     @Autowired
     private IUserService userService;
+    @Autowired
+    private ModelMapper mapper;
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getById(@PathVariable Long id){
-        return ResponseEntity.ok().body(userService.getById(id));
+    public ResponseEntity<UserDto> getById(@PathVariable Long id){
+        return ResponseEntity.ok().body(mapper.map(userService.getById(id), UserDto.class));
     }
 }
