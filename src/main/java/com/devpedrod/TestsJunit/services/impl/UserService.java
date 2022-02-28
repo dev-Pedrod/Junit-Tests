@@ -1,10 +1,12 @@
 package com.devpedrod.TestsJunit.services.impl;
 
 import com.devpedrod.TestsJunit.domain.User;
+import com.devpedrod.TestsJunit.dto.UserDto;
 import com.devpedrod.TestsJunit.repository.UserRepository;
 import com.devpedrod.TestsJunit.services.IUserService;
 import com.devpedrod.TestsJunit.services.exceptions.ObjectNotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +20,8 @@ public class UserService implements IUserService {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private ModelMapper mapper;
 
     @Override
     @Transactional(readOnly = true)
@@ -33,4 +37,11 @@ public class UserService implements IUserService {
         log.info("Searching all users");
         return userRepository.findAll();
     }
+
+    @Override
+    public User create(UserDto object) {
+        log.info("Creating a new user");
+        return userRepository.save(mapper.map(object, User.class));
+    }
+
 }
