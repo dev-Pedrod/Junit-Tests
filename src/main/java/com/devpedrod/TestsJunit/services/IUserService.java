@@ -9,5 +9,5 @@ public interface IUserService {
     User getById(Long id);
     List<User> getAllUsers();
     User create(UserDto object);
-
+    void findByEmail(String email);
 }
