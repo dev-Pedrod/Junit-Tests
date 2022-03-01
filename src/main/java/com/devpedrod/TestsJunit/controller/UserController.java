@@ -44,4 +44,11 @@ public class UserController {
                 .buildAndExpand(newUser.getId()).toUri();
         return ResponseEntity.created(uri).build();
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> update(@PathVariable Long id, @RequestBody UserDto object){
+        object.setId(id);
+        userService.update(object);
+        return ResponseEntity.ok().build();
+    }
 }

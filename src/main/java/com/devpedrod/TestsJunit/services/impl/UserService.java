@@ -29,7 +29,7 @@ public class UserService implements IUserService {
     public User getById(Long id) {
         log.info("Looking for user with ID: {}", id);
         Optional<User> user = userRepository.findById(id);
-        return user.orElseThrow(() -> new ObjectNotFoundException("User with id "+ id +" not found"));
+        return user.orElseThrow(() -> new ObjectNotFoundException("User with id: "+ id +" not found"));
     }
 
     @Override
@@ -42,17 +42,24 @@ public class UserService implements IUserService {
     @Override
     public User create(UserDto object) {
         log.info("Creating a new user");
-        findByEmail(object.getEmail());
+        findByEmail(object);
         return userRepository.save(mapper.map(object, User.class));
     }
 
     @Override
-    public void findByEmail(String email) {
-        log.info("Checking if the email: {} already exists", email);
-        Optional<User> user = userRepository.findByEmail(email);
-        if(user.isPresent()){
+    public void findByEmail(UserDto object) {
+        log.info("Checking if the email: {} already exists", object.getEmail());
+        Optional<User> user = userRepository.findByEmail(object.getEmail());
+        if(user.isPresent() && !user.get().getId().equals(object.getId())){
             throw new DataIntegrityException("E-mail already exists");
         }
     }
 
+    @Override
+    public User update(UserDto object) {
+        log.info("updating user with ID: {}", object.getId());
+        getById(object.getId());
+        findByEmail(object);
+        return userRepository.saveAndFlush(mapper.map(object, User.class));
+    }
 }
