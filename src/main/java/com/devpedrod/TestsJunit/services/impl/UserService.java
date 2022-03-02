@@ -46,8 +46,7 @@ public class UserService implements IUserService {
         return userRepository.save(mapper.map(object, User.class));
     }
 
-    @Override
-    public void findByEmail(UserDto object) {
+    private void findByEmail(UserDto object) {
         log.info("Checking if the email: {} already exists", object.getEmail());
         Optional<User> user = userRepository.findByEmail(object.getEmail());
         if(user.isPresent() && !user.get().getId().equals(object.getId())){
@@ -56,10 +55,16 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public User update(UserDto object) {
+    public void update(UserDto object) {
         log.info("updating user with ID: {}", object.getId());
         getById(object.getId());
         findByEmail(object);
-        return userRepository.saveAndFlush(mapper.map(object, User.class));
+        userRepository.saveAndFlush(mapper.map(object, User.class));
+    }
+
+    @Override
+    public void delete(Long id) {
+        getById(id);
+        userRepository.deleteById(id);
     }
 }

@@ -9,6 +9,6 @@ public interface IUserService {
     User getById(Long id);
     List<User> getAllUsers();
     User create(UserDto object);
-    void findByEmail(UserDto object);
-    User update(UserDto object);
+    void update(UserDto object);
+    void delete(Long id);
 }

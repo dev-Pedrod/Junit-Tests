@@ -17,12 +17,13 @@ import java.util.stream.Collectors;
 @RequestMapping("api/v1/users")
 public class UserController {
 
+    public static final String ID = "/{id}";
     @Autowired
     private IUserService userService;
     @Autowired
     private ModelMapper mapper;
 
-    @GetMapping("/{id}")
+    @GetMapping(ID)
     public ResponseEntity<UserDto> getById(@PathVariable Long id){
         return ResponseEntity.ok().body(mapper.map(userService.getById(id), UserDto.class));
     }
@@ -40,15 +41,21 @@ public class UserController {
         User newUser = userService.create(user);
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
-                .path("/{id}")
+                .path(ID)
                 .buildAndExpand(newUser.getId()).toUri();
         return ResponseEntity.created(uri).build();
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(ID)
     public ResponseEntity<Void> update(@PathVariable Long id, @RequestBody UserDto object){
         object.setId(id);
         userService.update(object);
         return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping(ID)
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        userService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }
