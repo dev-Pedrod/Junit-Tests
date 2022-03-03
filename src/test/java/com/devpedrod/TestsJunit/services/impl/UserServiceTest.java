@@ -3,11 +3,11 @@ package com.devpedrod.TestsJunit.services.impl;
 import com.devpedrod.TestsJunit.domain.User;
 import com.devpedrod.TestsJunit.dto.UserDto;
 import com.devpedrod.TestsJunit.repository.UserRepository;
+import com.devpedrod.TestsJunit.services.exceptions.ObjectNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,11 +16,13 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 class UserServiceTest {
 
+    // Parâmetros para o User
     public static final Long ID = 1L;
     public static final String NAME = "Pedro";
     public static final String EMAIL = "Pedro@gmail.com";
@@ -60,6 +62,19 @@ class UserServiceTest {
         assertEquals(ID, response.getId());
         assertEquals(NAME, response.getName());
         assertEquals(EMAIL, response.getEmail());
+    }
+
+    @Test
+    void whenGetByIdThenReturnAnObjectNotFoundException() {
+        when(userRepository.findById(anyLong()))
+                .thenThrow(new ObjectNotFoundException("User with id: "+ ID +" not found"));
+
+        try {
+            userService.getById(ID);
+        } catch (Exception ex){
+            assertEquals(ObjectNotFoundException.class, ex.getClass());
+            assertEquals("User with id: "+ ID +" not found", ex.getMessage());
+        }
     }
 
     @Test
