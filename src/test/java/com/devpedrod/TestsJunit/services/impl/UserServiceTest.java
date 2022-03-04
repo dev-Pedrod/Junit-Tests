@@ -3,6 +3,7 @@ package com.devpedrod.TestsJunit.services.impl;
 import com.devpedrod.TestsJunit.domain.User;
 import com.devpedrod.TestsJunit.dto.UserDto;
 import com.devpedrod.TestsJunit.repository.UserRepository;
+import com.devpedrod.TestsJunit.services.exceptions.DataIntegrityException;
 import com.devpedrod.TestsJunit.services.exceptions.ObjectNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,6 +19,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.when;
 
@@ -80,7 +82,7 @@ class UserServiceTest {
                 .thenThrow(new ObjectNotFoundException(OBJECT_NOT_FOUND_MSG));
 
         try {
-            userService.getById(ID);
+            userService.getById(2L);
         } catch (Exception ex){
             assertEquals(ObjectNotFoundException.class, ex.getClass());
             assertEquals(OBJECT_NOT_FOUND_MSG, ex.getMessage());
@@ -116,7 +118,19 @@ class UserServiceTest {
         assertEquals(NAME, response.getName());
         assertEquals(EMAIL, response.getEmail());
         assertEquals(PASSWORD, response.getPassword());
+    }
 
+    @Test
+    void whenCreateThenReturnAnDataIntegrityException() {
+        when(userRepository.findByEmail(anyString())).thenReturn(optionalUser);
+
+        try {
+            optionalUser.get().setId(2L);
+            userService.create(userDto);
+        } catch (Exception ex){
+            assertEquals(DataIntegrityException.class, ex.getClass());
+            assertEquals("E-mail already exists", ex.getMessage());
+        }
     }
 
     @Test
