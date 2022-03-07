@@ -37,6 +37,7 @@ class UserServiceTest {
 
     // Mensagens das exceptions
     public static final String OBJECT_NOT_FOUND_MSG = "User with id: " + ID + " not found";
+    public static final String E_MAIL_ALREADY_EXISTS = "E-mail already exists";
 
     @InjectMocks
     private UserService userService;
@@ -129,13 +130,13 @@ class UserServiceTest {
             userService.create(userDto);
         } catch (Exception ex){
             assertEquals(DataIntegrityException.class, ex.getClass());
-            assertEquals("E-mail already exists", ex.getMessage());
+            assertEquals(E_MAIL_ALREADY_EXISTS, ex.getMessage());
         }
     }
 
     @Test
     void whenUpdateThenReturnSuccess() {
-        when(userRepository.save(any())).thenReturn(user);
+        when(userRepository.saveAndFlush(any())).thenReturn(user);
 
         User response = userService.update(userDto);
 
@@ -147,6 +148,18 @@ class UserServiceTest {
         assertEquals(EMAIL, response.getEmail());
         assertEquals(PASSWORD, response.getPassword());
     }
+
+    @Test
+    void whenUpdateThenReturnAnDataIntegrityException() {
+        when(userRepository.findByEmail(anyString())).thenReturn(optionalUser);
+
+        try {
+            optionalUser.get().setId(2L);
+            userService.create(userDto);
+        } catch (Exception ex){
+            assertEquals(DataIntegrityException.class, ex.getClass());
+            assertEquals(E_MAIL_ALREADY_EXISTS, ex.getMessage());
+        }
     }
 
     @Test
