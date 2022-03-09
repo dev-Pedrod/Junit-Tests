@@ -28,11 +28,14 @@ class UserServiceTest {
     // Index para pegar o User na lista
     public static final int INDEX = 0;
 
-    // Parâmetros para o User
+    // Parâmetros para criar User
     public static final Long ID = 1L;
     public static final String NAME = "Pedro";
     public static final String EMAIL = "Pedro@gmail.com";
     public static final String PASSWORD = "Pedro123";
+
+    // Parâmetro para lançar exceções
+    public static final long ID_FOR_EXCEPTIONS = 2L;
 
     // Mensagens das exceptions
     public static final String OBJECT_NOT_FOUND_MSG = "User with id: " + ID + " not found";
@@ -82,7 +85,7 @@ class UserServiceTest {
                 .thenThrow(new ObjectNotFoundException(OBJECT_NOT_FOUND_MSG));
 
         try {
-            userService.getById(2L);
+            userService.getById(ID_FOR_EXCEPTIONS);
         } catch (Exception ex){
             assertEquals(ObjectNotFoundException.class, ex.getClass());
             assertEquals(OBJECT_NOT_FOUND_MSG, ex.getMessage());
@@ -125,7 +128,7 @@ class UserServiceTest {
         when(userRepository.findByEmail(anyString())).thenReturn(optionalUser);
 
         try {
-            optionalUser.get().setId(2L);
+            optionalUser.get().setId(ID_FOR_EXCEPTIONS);
             userService.create(userDto);
         } catch (Exception ex){
             assertEquals(DataIntegrityException.class, ex.getClass());
@@ -153,7 +156,7 @@ class UserServiceTest {
         when(userRepository.findByEmail(anyString())).thenReturn(optionalUser);
 
         try {
-            optionalUser.get().setId(2L);
+            optionalUser.get().setId(ID_FOR_EXCEPTIONS);
             userService.create(userDto);
         } catch (Exception ex){
             assertEquals(DataIntegrityException.class, ex.getClass());
@@ -171,6 +174,17 @@ class UserServiceTest {
 
         // verifique que o método delete foi chamado apenas 1 vez
         verify(userRepository, times(1)).deleteById(anyLong());
+    }
+
+    @Test
+    void deleteWithObjectNotFoundException() {
+        when(userRepository.findById(anyLong())).thenThrow(new ObjectNotFoundException(OBJECT_NOT_FOUND_MSG));
+        try {
+            userService.delete(ID_FOR_EXCEPTIONS);
+        } catch (Exception ex) {
+            assertEquals(ObjectNotFoundException.class, ex.getClass());
+            assertEquals(OBJECT_NOT_FOUND_MSG, ex.getMessage());
+        }
     }
 
     private void startUser() {
