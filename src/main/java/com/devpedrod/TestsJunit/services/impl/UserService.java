@@ -55,11 +55,10 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public void update(UserDto object) {
+    public User update(UserDto object) {
         log.info("updating user with ID: {}", object.getId());
-        getById(object.getId());
         findByEmail(object);
-        userRepository.saveAndFlush(mapper.map(object, User.class));
+        return userRepository.saveAndFlush(mapper.map(object, User.class));
     }
 
     @Override
