@@ -20,8 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.anyLong;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 class UserServiceTest {
@@ -163,7 +162,15 @@ class UserServiceTest {
     }
 
     @Test
-    void delete() {
+    void deleteWithSuccess() {
+        when(userRepository.findById(anyLong())).thenReturn(optionalUser);
+
+        // Não faça nada quando esse método for chamado
+        doNothing().when(userRepository).deleteById(anyLong());
+        userService.delete(ID);
+
+        // verifique que o método delete foi chamado apenas 1 vez
+        verify(userRepository, times(1)).deleteById(anyLong());
     }
 
     private void startUser() {
