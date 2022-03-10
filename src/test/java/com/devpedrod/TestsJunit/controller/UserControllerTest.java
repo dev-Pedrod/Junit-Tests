@@ -10,7 +10,11 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -18,6 +22,9 @@ import static org.mockito.Mockito.*;
 
 @SpringBootTest
 class UserControllerTest {
+
+    // Index para pegar o User na lista
+    public static final int INDEX = 0;
 
     // Parâmetros para criar User
     public static final Long ID = 1L;
@@ -51,6 +58,7 @@ class UserControllerTest {
         assertNotNull(response);
         assertNotNull(response.getBody());
 
+        assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(ResponseEntity.class, response.getClass());
         assertEquals(UserDto.class, response.getBody().getClass());
 
@@ -61,7 +69,24 @@ class UserControllerTest {
     }
 
     @Test
-    void getAllUsers() {
+    void whenGetAllUsersThenReturnAListOfUserDTO() {
+        when(userService.getAllUsers()).thenReturn(List.of(user));
+        when(modelMapper.map(any(), any())).thenReturn(userDto);
+
+        ResponseEntity<List<UserDto>> response = userController.getAllUsers();
+
+        assertNotNull(response);
+        assertNotNull(response.getBody());
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(ResponseEntity.class, response.getClass());
+        assertEquals(ArrayList.class, response.getBody().getClass());
+        assertEquals(UserDto.class, response.getBody().get(INDEX).getClass());
+
+        assertEquals(ID, response.getBody().get(INDEX).getId());
+        assertEquals(NAME, response.getBody().get(INDEX).getName());
+        assertEquals(EMAIL, response.getBody().get(INDEX).getEmail());
+        assertEquals(PASSWORD, response.getBody().get(INDEX).getPassword());
     }
 
     @Test
