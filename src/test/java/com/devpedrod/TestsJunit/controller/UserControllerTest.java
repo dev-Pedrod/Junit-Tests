@@ -101,7 +101,15 @@ class UserControllerTest {
     }
 
     @Test
-    void update() {
+    void whenUpdateThenReturnSuccess() {
+        when(userService.update(userDto)).thenReturn(user);
+
+        ResponseEntity<Void> response = userController.update(ID, userDto);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(ResponseEntity.class, response.getClass());
+        verify(userService, times(1)).update(userDto);
     }
 
     @Test
