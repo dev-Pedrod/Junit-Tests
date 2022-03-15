@@ -38,11 +38,10 @@ public class UserController {
 
     @PostMapping("")
     public ResponseEntity<Void> create(@RequestBody UserDto user){
-        User newUser = userService.create(user);
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path(ID)
-                .buildAndExpand(newUser.getId()).toUri();
+                .buildAndExpand(userService.create(user).getId()).toUri();
         return ResponseEntity.created(uri).build();
     }
 
