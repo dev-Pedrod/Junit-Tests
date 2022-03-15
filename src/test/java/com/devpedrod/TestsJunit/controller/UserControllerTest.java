@@ -98,6 +98,7 @@ class UserControllerTest {
         assertEquals(ResponseEntity.class, response.getClass());
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertNotNull(response.getHeaders().get("Location"));
+        verify(userService, times(1)).create(userDto);
     }
 
     @Test
@@ -113,7 +114,15 @@ class UserControllerTest {
     }
 
     @Test
-    void delete() {
+    void whenDeleteThenReturnSuccess() {
+        doNothing().when(userService).delete(anyLong());
+
+        ResponseEntity<Void> response = userController.delete(ID);
+
+        assertNotNull(response);
+        assertEquals(ResponseEntity.class, response.getClass());
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        verify(userService, times(1)).delete(anyLong());
     }
 
     private void startUser() {
