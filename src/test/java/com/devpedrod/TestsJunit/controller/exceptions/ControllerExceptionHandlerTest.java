@@ -1,5 +1,6 @@
 package com.devpedrod.TestsJunit.controller.exceptions;
 
+import com.devpedrod.TestsJunit.services.exceptions.DataIntegrityException;
 import com.devpedrod.TestsJunit.services.exceptions.ObjectNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,8 @@ class ControllerExceptionHandlerTest {
     private ControllerExceptionHandler exceptionHandler;
 
     private static final String OBJECT_NOT_fOUND = "Object not found";
+    private static final String E_MAIL_ALREADY_EXISTS = "E-mail already exists";
+
 
     @BeforeEach
     void setUp() {
@@ -24,7 +27,7 @@ class ControllerExceptionHandlerTest {
     }
 
     @Test
-    void WhenObjectNotFoundThenReturnAResponseEntity() {
+    void whenObjectNotFoundThenReturnAResponseEntity() {
         ResponseEntity<StandardError> response = exceptionHandler
                 .objectNotFound(
                         new ObjectNotFoundException(OBJECT_NOT_fOUND),
@@ -40,6 +43,18 @@ class ControllerExceptionHandlerTest {
     }
 
     @Test
-    void dataIntegrityException() {
+    void whenDataIntegrityThenReturnAResponseEntity() {
+        ResponseEntity<StandardError> response = exceptionHandler
+                .dataIntegrityException(
+                        new DataIntegrityException(E_MAIL_ALREADY_EXISTS),
+                        new MockHttpServletRequest());
+
+        assertNotNull(response);
+        assertNotNull(response.getBody());
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals(ResponseEntity.class, response.getClass());
+        assertEquals(StandardError.class, response.getBody().getClass());
+        assertEquals(E_MAIL_ALREADY_EXISTS, response.getBody().getError());
+        assertEquals(400, response.getBody().getStatus());
     }
 }
